@@ -5,6 +5,9 @@ var HotSpots = Class.create({
        this.container = $(container);
        this.spotData = spotData;
        
+       // default of spot data is empty array
+       if (this.spotData == null) this.spotData = [];
+       
        this.preloadImage();
               
        // set mode to normal
@@ -15,12 +18,16 @@ var HotSpots = Class.create({
        // preload the clicker
        this.clickerImage = $(new Image());
        this.clickerImage.src = this.options.clickerImage;
-       this.clickerImage.observe("load", this.setup.bind(this));
+       
+       this.setup();
+       
+       // DECISION: Keep preloader? Or use user given size?
+       //this.clickerImage.observe("load", this.setup.bind(this));
    },
    
    setup: function() {
        // find the size of the clicker for centering purposes
-       this.clickerSize = { x: this.clickerImage.width, y: this.clickerImage.height };
+       this.clickerSize = { x: this.options.clickerImageSize.width, y: this.options.clickerImageSize.height };
        
        this.spots = $A([]);
        
@@ -36,6 +43,8 @@ var HotSpots = Class.create({
        
        // dispatch a load event after preload is done
        this.options.onLoad();
+       
+       this.hidden = false;
    },
    
    // normal text box editor
@@ -142,6 +151,7 @@ var HotSpots = Class.create({
    clickAdd: function(event) {
        // don't do click add if clicking on the editor
        if ($(event.target).descendantOf(this.editor) || event.target == this.editor) return;
+       if (this.hidden) return;
        
        // if editing then don't add anything, but close the editor
        if (this.activeSpot) {
@@ -156,8 +166,6 @@ var HotSpots = Class.create({
        var position = [ event.pageX - offset[0], event.pageY - offset[1] ];
        
        this.add(position[0], position[1], "#");
-       
-       console.log(this.asJSON())
    },
    
    asJSON: function() {
@@ -168,6 +176,30 @@ var HotSpots = Class.create({
        });
        
        return "[ " + temp.join(",\n") + " ]";
+   },
+   
+   show: function() {
+       this.spots.each(function(spot) {
+          spot.show(); 
+       });
+       
+       this.hidden = false;
+   },
+   
+   hide: function() {
+       this.spots.each(function(spot) {
+          spot.hide(); 
+       });
+       
+       this.hidden = true;
+   },
+   
+   quickHide: function() {
+       this.spots.each(function(spot) {
+          spot.quickHide(); 
+       });
+       
+       this.hidden = true;
    }
 });
 
@@ -226,7 +258,7 @@ HotSpots.Spot = Class.create({
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
         
         // if the clicker was never dragged, then open the editor to edit
-        if (!this.dragged) {
+        if (!this.dragged && !this.hidden) {
             this.hotSpots.openEditor(this);
         }
         
@@ -238,6 +270,7 @@ HotSpots.Spot = Class.create({
 
         // only click add if in admin mode
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
+        if (this.hidden) return;
                 
         var offset = this.hotSpots.container.cumulativeOffset();
         var position = [ event.pageX - offset[0], event.pageY - offset[1] ];
@@ -251,6 +284,7 @@ HotSpots.Spot = Class.create({
     mouseMove: function(event) {
         // only click add if in admin mode
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
+        if (this.hidden) return;
         
         if (this.canDrag) {
             this.dragged = true;
@@ -265,6 +299,7 @@ HotSpots.Spot = Class.create({
     mouseUp: function(event) {
         // only click add if in admin mode
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
+        if (this.hidden) return;
         
         this.canDrag = false;
         event.stop();
@@ -282,6 +317,29 @@ HotSpots.Spot = Class.create({
         // deletes the clicker defined
         this.clicker.remove();
         this.hotSpots.spots = this.hotSpots.spots.without(this);
+    },
+    
+    show: function() {
+        if (this.effect) this.effect.cancel();
+        this.effect = new Effect.Appear(this.clicker, {
+            duration: this.options.transitionSpeed
+        });
+        
+        this.hidden = false;
+    },
+    
+    hide: function() {
+        if (this.effect) this.effect.cancel();
+        this.effect = new Effect.Fade(this.clicker, {
+            duration: this.options.transitionSpeed
+        });
+        
+        this.hidden = true;
+    },
+    
+    quickHide: function() {
+        this.clicker.hide();
+        this.hidden = true;
     }
 })
 
@@ -298,6 +356,7 @@ HotSpots.Editors = {
 };
 
 HotSpots.DefaultOptions = {
+    onLoad: function() {},
     editorType: HotSpots.Editors.Normal,
     editorClass: "editor",
     editorInputClass: "editor-input",
@@ -305,5 +364,6 @@ HotSpots.DefaultOptions = {
     clickerZIndex: 200,
     clickerClass: "clicker",
     clickerImage: "/images/clicker.png",
+    clickerImageSize: { width: 0, height: 0 },
     zoomerContentClass: "zoomer-content"    // Use this to define the class that the HTMLZoomer editor uses to grab ID's
 };

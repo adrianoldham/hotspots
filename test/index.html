@@ -9,11 +9,13 @@
 	
     <script type="text/javascript" charset="utf-8" src="../lib/prototype.js"></script>
     <script type="text/javascript" charset="utf-8" src="../lib/scriptaculous.js?load=effects"></script>
-    <script type="text/javascript" charset="utf-8" src="../js/hotspots.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/imgzoomer.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/plugins/flashzoomer.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/plugins/htmlzoomer.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/plugins/iframezoomer.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/panorama.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/hotspots.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/hotspots_panorama.js"></script>
 
 	<style type="text/css" media="screen">
 		#container {
@@ -63,7 +65,6 @@
 
 <body>
 	<div id="container">
-		<img src="images/test-image.png" />
 	</div>
 	
 	<div id="test1" class="zoomer-content">
@@ -77,31 +78,39 @@
 	</div>
 
     <script type="text/javascript" charset="utf-8">
-		var testSpots = [
-			{ x: 100, y: 100, href: '#test1' },
-			{ x: 300, y: 180, href: '#test1' },
-			{ x: 150, y: 204, href: '#test1' },
-			{ x: 108, y: 150, href: '#test1' },
-			{ x: 224, y: 369, href: '#test1' }
-		];
+		// needs to be above the setup of hotSpotsPanorama and also a GLOBAL variable
+		// once you grab the output, you can replace the bottom line with it
+		var hotSpotsData = {};
 		
-        function runTest() {
-			var hotSpots = new HotSpots(testSpots, "container", {
+        function runTest() {			
+			// images to use in the panorama (you don't need to do this, depends on how
+			// you want to setup panorama)
+			var images = 
+				[ "images/test-image.png",
+				  "images/test-image2.png" ].map(function(src) {
+					var image = new Image();
+					image.src = src;
+					return image;
+				})
+			;
+	
+			// First thing is to setup panorama however you want
+			// You can do it like this
+			// Or use flowing panorama or fixed panorama
+			var panorama = new Panorama("container", images, {
+				usePauseIndicator: true,
+				useMouseScroll: false,
+				useMouseStop: true			
+			});
+			
+			// You then parse in the panorama object into hot spots
+			// for Fixed and Flowing, you'll need to do something like
+			// fixedPanorama.panorama or flowingPanorama.panorama.
+			var hotSpotsPanorama = new HotSpotsPanorama(panorama, {
 				editorType: HotSpots.Editors.HTMLZoomer,
 				clickerImage: "images/clicker.png",
-				onLoad: function() {
-					/*
-					var imgZoomer = new ImgZoomer("a.clicker", {
-						imagePath: "../images/imgzoomer/",
-						zoomRects: true,
-						closeOnBlur: false,
-						closeBoxClass: "closeBox"
-					});
-					*/
-				}
-			}); 
-			
-			hotSpots.mode = HotSpots.Modes.Admin;
+				clickerImageSize: { width: 30, height: 30 }			
+			});
         }
         
         Event.observe(window, "load", runTest);
