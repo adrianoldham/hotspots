@@ -64,7 +64,7 @@ var HotSpotsPanorama = Class.create({
         this.setupOutputButton();
         
         // update the output text area every 1 second
-        new PeriodicalExecuter(this.updateOutput.bind(this), 1);
+        // new PeriodicalExecuter(this.updateOutput.bind(this), 1);
     },
     
     updateOutput: function() {
