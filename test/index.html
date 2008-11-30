@@ -34,6 +34,7 @@
 			padding: 10px;
 			width: 200px;
 			height: 200px;
+			display: none;
 		}
 		
 		.closeBox {
@@ -60,10 +61,27 @@
 		.editor input.editor-input {
 			width: 188px;
 		}
+		
+		.output {
+			width: 994px;
+			height: 20%;
+			bottom: 20px;
+			right: 20px;
+			padding: 5px;
+			font-size: 0.85em;
+		}
+		
+		.cancel-button {
+			bottom: 30px;
+			right: 30px;
+		}
 	</style>
 </head>
 
 <body>
+	<!-- Remove to disable admin mode -->
+	<div id="bse_edit_mode"></div>
+	
 	<div id="container">
 	</div>
 	
@@ -80,7 +98,7 @@
     <script type="text/javascript" charset="utf-8">
 		// needs to be above the setup of hotSpotsPanorama and also a GLOBAL variable
 		// once you grab the output, you can replace the bottom line with it
-		var hotSpotsData = {};
+		var hotSpotsData = { 'file://localhost/Users/edmondleung/Documents/JavaScript%20Projects/hotspots/trunk/hotspots/test/images/test-image.png': [ { x: 449, y: 179, href: '#test1' }, { x: 360, y: 258, href: '#test2' } ], 'file://localhost/Users/edmondleung/Documents/JavaScript%20Projects/hotspots/trunk/hotspots/test/images/test-image2.png': [ ] };
 		
         function runTest() {			
 			// images to use in the panorama (you don't need to do this, depends on how
@@ -108,9 +126,24 @@
 			// fixedPanorama.panorama or flowingPanorama.panorama.
 			var hotSpotsPanorama = new HotSpotsPanorama(panorama, {
 				editorType: HotSpots.Editors.HTMLZoomer,
+				clickerClass: "clicker",
 				clickerImage: "images/clicker.png",
 				clickerImageSize: { width: 30, height: 30 }			
 			});
+			
+			// need to setup the zoomer to use the same class as the clickers
+			// created, this needs to be AFTER the hot spots panorama is setup
+			// since it relies on it's clickers
+            var imgZoomer = new ImgZoomer("a.clicker", {
+                imagePath: "../images/imgzoomer/",
+				zoomRects: true
+            });
+
+			// This is required to link to image zoomer, again needs to be AFTER the img zoomer setup
+			hotSpotsPanorama.useImgZoomer(imgZoomer);
+
+			// Mode changing needs to be done AFTER img zoomer setup
+			hotSpotsPanorama.checkIfAdmin();
         }
         
         Event.observe(window, "load", runTest);

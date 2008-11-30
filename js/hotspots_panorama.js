@@ -16,6 +16,29 @@ var HotSpotsPanorama = Class.create({
         this.setup();
     },
     
+    changeMode: function(mode) {
+        for (var src in this.hotSpots) {
+            this.hotSpots[src].changeMode(mode);
+        }
+        
+        this.mode = mode;
+    },
+    
+    checkIfAdmin: function() {
+        // if the below element exists, then we are in admin
+        if ($(this.options.adminTestElement)) {
+            this.changeMode(HotSpots.Modes.Admin);
+        }
+    },
+    
+    // This call lets hotspots know that image zoomer is used and needs to handle
+    // the disabling of image zoomer in admin mode
+    useImgZoomer: function(imgZoomer) {
+        for (var src in this.hotSpots) {
+            this.hotSpots[src].useImgZoomer(imgZoomer);
+        }
+    },
+    
     setup: function() {
         if (this.data == null) {
             this.data = {};
@@ -31,14 +54,135 @@ var HotSpotsPanorama = Class.create({
         this.panorama.images.each(function(image) {
             var hotSpots = new HotSpots(this.data[image.src], this.panorama.container, this.options);
             
-            // TEMP
-            hotSpots.mode = HotSpots.Modes.Admin;
-            
             this.hotSpots[image.src] = hotSpots;
             
             // only show hotspots from first panorama
             if (image != this.panorama.images.first()) hotSpots.quickHide();
         }.bind(this));
+        
+        this.setupOutputTextArea();
+        this.setupOutputButton();
+        
+        // update the output text area every 1 second
+        new PeriodicalExecuter(this.updateOutput.bind(this), 1);
+    },
+    
+    updateOutput: function() {
+        this.outputTextArea.value = this.asCode();
+    },
+    
+    setupOutputButton: function() {
+        // create the text area to output the code to
+        this.outputButton = new Element("input", {
+            'type': 'button',
+            'class': this.options.outputButtonClass,
+            'value': this.options.outputButtonText
+        });
+        
+        this.outputButton.setStyle({
+            position: "absolute",
+            zIndex: this.options.outputButtonZIndex,
+            display: 'none'
+        });
+        
+        this.panorama.container.appendChild(this.outputButton);
+        
+        // make sure the button is shown after a time of mouse not moving
+        $(document.body).observe("mousemove", this.mouseMove.bindAsEventListener(this));
+        
+        // if the user leaves the button then just hide it
+        this.outputButton.observe("mouseout", function() {
+            this.hideOutputButton();
+        }.bind(this))
+        
+        // clicking on the button will show the JS code output
+        this.outputButton.observe("click", this.showOutputTextArea.bind(this));
+    },
+    
+    setupOutputTextArea: function() {
+        // create the text area to output the code to
+        this.outputTextArea = new Element("textarea", { 'class': this.options.outputTextAreaClass });
+        
+        this.outputTextArea.setStyle({
+            opacity: this.options.outputTextAreaOpacity,
+            position: "absolute",
+            zIndex: this.options.outputTextAreaZIndex,
+            display: 'none'
+        });
+        
+        // create the button that will hide the output text area
+        this.cancelButton = new Element("input", {
+            'type': 'button',
+            'class': this.options.cancelButtonClass,
+            'value': this.options.cancelButtonText
+        });
+        
+        this.cancelButton.setStyle({
+            position: "absolute",
+            zIndex: this.options.outputTextAreaZIndex,
+            display: 'none'
+        });
+        
+        // clicking on the cancel button hides the output text area
+        this.cancelButton.observe("click", this.hideOutputTextArea.bind(this));
+        
+        this.panorama.container.appendChild(this.outputTextArea);
+        this.panorama.container.appendChild(this.cancelButton);
+    },
+    
+    showOutputTextArea: function() {
+        if (this.mode != HotSpots.Modes.Admin) return;
+        
+        this.updateOutput();
+        
+        this.outputTextArea.show();
+        this.cancelButton.show();
+        this.hideOutputButton();
+        
+        // make sure if the text area is opened, then never show the output button again
+        this.ignoreOutputButton = true;
+    },
+    
+    hideOutputTextArea: function() {
+        // we can show the button again
+        this.ignoreOutputButton = false;
+        
+        this.outputTextArea.hide();
+        this.cancelButton.hide();
+    },
+    
+    mouseMove: function(event) {
+        // provides the delay for the output button to show
+        // if mouse doens't move for the set amount of time then show button
+        clearTimeout(this.outputButtonShower);
+        this.outputButtonShower = setTimeout(this.showOutputButton.bind(this, event), this.options.showOutputButtonDelay);
+    },
+    
+    hideOutputButton: function() {
+        // show the output button by fading it
+        if (this.outputButtonEffect) this.outputButtonEffect.cancel();
+        this.outputButtonEffect = new Effect.Fade(this.outputButton, { duration: this.options.outputButtonTransitionDelay });  
+    },
+    
+    showOutputButton: function(event) {
+        if (this.mode != HotSpots.Modes.Admin) return;
+        
+        // dont even attempt to show the button if it's set to be ignored
+        if (this.ignoreOutputButton) return;
+        
+        // show the output button by fading it
+        if (this.outputButtonEffect) this.outputButtonEffect.cancel();
+        this.outputButtonEffect = new Effect.Appear(this.outputButton, { duration: this.options.outputButtonTransitionDelay });
+        
+        var offset = this.panorama.container.cumulativeOffset();
+        var position = [ event.pageX - offset[0], event.pageY - offset[1] ];
+        var buttonSize = [ this.outputButton.getWidth(), this.outputButton.getHeight() ];
+        
+        // positions the output button right where the mouse cursor is
+        this.outputButton.setStyle({
+            left: position[0] - buttonSize[0] / 2 + "px",
+            top: position[1] - buttonSize[1] / 2 + "px"
+        });
     },
     
     getCurrentHotSpots: function() {
@@ -51,8 +195,6 @@ var HotSpotsPanorama = Class.create({
         var hotSpots = this.getCurrentHotSpots();
         if (!hotSpots) return;
         hotSpots.show();
-        
-        console.log(this.asJSON())
     },
     
     hide: function() {
@@ -69,9 +211,30 @@ var HotSpotsPanorama = Class.create({
         }
         
         return "{ " + hash.join(', \n') + " }";
+    },
+    
+    asCode: function() {
+        return "<script type='text/javascript'>\n" +
+               "var " + this.dataName + " = " + this.asJSON() + ";\n" + 
+               "</script>";
     }
 });
 
 HotSpotsPanorama.DefaultOptions = {
-    dataName: "hotSpotsData"
+    dataName: "hotSpotsData",
+    
+    cancelButtonClass: "cancel-button",
+    cancelButtonText: "Close",    
+    
+    outputButtonClass: "output-button",
+    outputButtonZIndex: 202,
+    outputButtonText: "View JavaScript Code",
+    outputButtonTransitionDelay: 0.25,
+    showOutputButtonDelay: 2000,
+    
+    outputTextAreaClass: "output",
+    outputTextAreaZIndex: 202,
+    outputTextAreaOpacity: 0.8,
+    
+    adminTestElement: "bse_edit_mode",
 };
