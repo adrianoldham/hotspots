@@ -131,6 +131,7 @@ var HotSpots = Class.create({
             top: y + "px"
         });
 
+        this.editor.setOpacity(0);
         this.editor.show();
 
         // if to right offscreen then reposition so it's visible
@@ -139,6 +140,7 @@ var HotSpots = Class.create({
         }
 
         this.editor.setStyle({ left: x + "px" });
+        this.editor.setOpacity(1);
 
         this.hrefInput.focus();
         this.hrefInput.value = spot.href;
