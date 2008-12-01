@@ -236,5 +236,5 @@ HotSpotsPanorama.DefaultOptions = {
     outputTextAreaZIndex: 202,
     outputTextAreaOpacity: 0.8,
     
-    adminTestElement: "bse_edit_mode",
+    adminTestElement: "bse_edit_mode"
 };

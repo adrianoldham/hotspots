@@ -231,6 +231,8 @@ HotSpots.Spot = Class.create({
         this.hotSpots = hotSpots;
 
         this.setup(x, y, href);
+        
+        this.isIE = (/MSIE (5\.5|6\.|7\.)/.test(navigator.userAgent) && navigator.platform == "Win32");
     },
     
     setup: function(x, y, href) {    
@@ -238,6 +240,8 @@ HotSpots.Spot = Class.create({
         
         this.clickerImage = $(new Image());
         this.clickerImage.src = this.options.clickerImage;
+        
+        this.clickerImage.iePNGFix(this.options.blankPixel);
         
         this.clicker = new Element("a", { href: href, 'class': this.options.clickerClass });
         this.clicker.appendChild(this.clickerImage);
@@ -348,19 +352,27 @@ HotSpots.Spot = Class.create({
     },
     
     show: function() {
-        if (this.effect) this.effect.cancel();
-        this.effect = new Effect.Appear(this.clicker, {
-            duration: this.options.transitionSpeed
-        });
+        if (this.isIE) {
+            this.clicker.show();
+        } else {
+            if (this.effect) this.effect.cancel();
+            this.effect = new Effect.Appear(this.clicker, {
+                duration: this.options.transitionSpeed
+            });            
+        }
         
         this.hidden = false;
     },
     
     hide: function() {
-        if (this.effect) this.effect.cancel();
-        this.effect = new Effect.Fade(this.clicker, {
-            duration: this.options.transitionSpeed
-        });
+        if (this.isIE) {
+            this.clicker.hide();
+        } else {
+            if (this.effect) this.effect.cancel();
+            this.effect = new Effect.Fade(this.clicker, {
+                duration: this.options.transitionSpeed
+            });
+        }
         
         this.hidden = true;
     },
@@ -393,5 +405,6 @@ HotSpots.DefaultOptions = {
     clickerClass: "clicker",
     clickerImage: "/images/clicker.png",
     clickerImageSize: { width: 0, height: 0 },
+    blankPixel: "/images/extra/blank.gif",
     zoomerContentClass: "zoomer-content"    // Use this to define the class that the HTMLZoomer editor uses to grab ID's
 };
