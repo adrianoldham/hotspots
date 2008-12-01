@@ -36,6 +36,10 @@ var HotSpotsPanorama = Class.create({
     useImgZoomer: function(imgZoomer) {
         for (var id in this.hotSpots) {
             this.hotSpots[id].useImgZoomer(imgZoomer);
+            
+            // pause panorama if img zoomer is opened
+            imgZoomer.options.onOpen = this.panorama.pause.bind(this.panorama);
+            imgZoomer.options.onClose = this.panorama.unPause.bind(this.panorama);
         }
     },
     
