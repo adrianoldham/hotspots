@@ -61,7 +61,7 @@ var HotSpots = Class.create({
         this.hrefInput = new Element("select", { 'class': this.options.editorInputClass });
 
         // option for those with no href set
-        this.hrefInput.appendChild(new Element("option", { 'value': "#" }).update("Please select..."));       
+        this.hrefInput.appendChild(new Element("option", { 'value': "" }).update("Please select..."));       
 
         contentElements.each(function(element) {
             var option = new Element("option", { 'value': "#" + element.id }).update(element.id);

@@ -17,8 +17,8 @@ var HotSpotsPanorama = Class.create({
     },
     
     changeMode: function(mode) {
-        for (var src in this.hotSpots) {
-            this.hotSpots[src].changeMode(mode);
+        for (var id in this.hotSpots) {
+            this.hotSpots[id].changeMode(mode);
         }
         
         this.mode = mode;
@@ -34,8 +34,8 @@ var HotSpotsPanorama = Class.create({
     // This call lets hotspots know that image zoomer is used and needs to handle
     // the disabling of image zoomer in admin mode
     useImgZoomer: function(imgZoomer) {
-        for (var src in this.hotSpots) {
-            this.hotSpots[src].useImgZoomer(imgZoomer);
+        for (var id in this.hotSpots) {
+            this.hotSpots[id].useImgZoomer(imgZoomer);
         }
     },
     
@@ -52,9 +52,9 @@ var HotSpotsPanorama = Class.create({
         
         // setup a hotspot for each image in the panorama
         this.panorama.images.each(function(image) {
-            var hotSpots = new HotSpots(this.data[image.src], this.panorama.container, this.options);
+            var hotSpots = new HotSpots(this.data[image.id], this.panorama.container, this.options);
             
-            this.hotSpots[image.src] = hotSpots;
+            this.hotSpots[image.id] = hotSpots;
             
             // only show hotspots from first panorama
             if (image != this.panorama.images.first()) hotSpots.quickHide();
@@ -188,7 +188,7 @@ var HotSpotsPanorama = Class.create({
     getCurrentHotSpots: function() {
         // exit if no current element
         if (!this.panorama.currentElement) return null;
-        return this.hotSpots[this.panorama.currentElement.element.src];
+        return this.hotSpots[this.panorama.currentElement.element.id];
     },
     
     show: function() {
@@ -206,8 +206,8 @@ var HotSpotsPanorama = Class.create({
     asJSON: function() {
         var hash = [];
         
-        for (var src in this.hotSpots) {
-            hash.push("'" + src + "'" + ": " + this.hotSpots[src].asJSON());
+        for (var id in this.hotSpots) {
+            hash.push("'" + id + "'" + ": " + this.hotSpots[id].asJSON());
         }
         
         return "{ " + hash.join(', \n') + " }";

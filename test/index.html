@@ -98,16 +98,23 @@
     <script type="text/javascript" charset="utf-8">
 		// needs to be above the setup of hotSpotsPanorama and also a GLOBAL variable
 		// once you grab the output, you can replace the bottom line with it
-		var hotSpotsData = { 'file://localhost/Users/edmondleung/Documents/JavaScript%20Projects/hotspots/trunk/hotspots/test/images/test-image.png': [ { x: 449, y: 179, href: '#test1' }, { x: 360, y: 258, href: '#test2' } ], 'file://localhost/Users/edmondleung/Documents/JavaScript%20Projects/hotspots/trunk/hotspots/test/images/test-image2.png': [ ] };
+		var hotSpotsData = { '0': [ { x: 429, y: 325, href: '' },
+		{ x: 747, y: 380, href: '' },
+		{ x: 522, y: 558, href: '' } ], 
+		'1': [ { x: 619, y: 395, href: '' },
+		{ x: 381, y: 290, href: '' },
+		{ x: 297, y: 393, href: '' } ] };
 		
         function runTest() {			
 			// images to use in the panorama (you don't need to do this, depends on how
 			// you want to setup panorama)
+			var index = 0;
 			var images = 
 				[ "images/test-image.png",
 				  "images/test-image2.png" ].map(function(src) {
 					var image = new Image();
 					image.src = src;
+					image.id = index++;
 					return image;
 				})
 			;
