@@ -383,7 +383,7 @@ HotSpots.Spot = Class.create({
         this.clicker.hide();
         this.hidden = true;
     }
-})
+});
 
 // Enum for modes
 HotSpots.Modes = {

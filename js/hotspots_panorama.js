@@ -97,7 +97,7 @@ var HotSpotsPanorama = Class.create({
         // if the user leaves the button then just hide it
         this.outputButton.observe("mouseout", function() {
             this.hideOutputButton();
-        }.bind(this))
+        }.bind(this));
         
         // clicking on the button will show the JS code output
         this.outputButton.observe("click", this.showOutputTextArea.bind(this));
