@@ -45,7 +45,7 @@ var HotSpotsPanorama = Class.create({
         }
         
         // setup on panorama change hook events to hook into hot spots
-        this.panorama.options.onChange = this.show.bind(this);
+        this.panorama.options.onShow = this.show.bind(this);
         this.panorama.options.onHide = this.hide.bind(this);
         
         this.hotSpots = {};
