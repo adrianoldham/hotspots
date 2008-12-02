@@ -175,7 +175,7 @@ var HotSpots = Class.create({
         var offset = this.container.cumulativeOffset();
         var position = [ event.pageX - offset[0], event.pageY - offset[1] ];
 
-        this.add(position[0], position[1], "#");
+        this.add(position[0], position[1], "");
     },
 
     asJSON: function() {
