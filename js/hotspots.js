@@ -138,8 +138,12 @@ var HotSpots = Class.create({
         if (x + this.editor.getWidth() > this.container.getWidth()) {
             x -= this.editor.getWidth() + this.clickerSize.x;
         }
+        
+        if (y + this.editor.getHeight() > this.container.getHeight()) {
+            y = this.container.getHeight() - this.editor.getHeight() - 5;
+        }
 
-        this.editor.setStyle({ left: x + "px" });
+        this.editor.setStyle({ left: x + "px", top: y + "px" });
         this.editor.setOpacity(1);
 
         this.hrefInput.focus();
@@ -181,7 +185,7 @@ var HotSpots = Class.create({
            temp.push(spot.asJSON());
         });
 
-        return "[ " + temp.join(",\n") + " ]";
+        return "[\n" + temp.join(",\n") + " ]";
     },
 
     show: function() {
