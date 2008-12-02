@@ -408,9 +408,9 @@ HotSpots.DefaultOptions = {
     editorInputClass: "editor-input",
     editorButtonClass: "editor-button",
     clickerZIndex: 200,
-    clickerClass: "clicker",
-    clickerImage: "/images/clicker.png",
-    clickerImageSize: { width: 0, height: 0 },
-    blankPixel: "/images/extra/blank.gif",
+    clickerClass: "hotspot",
+    clickerImage: "/images/hotspots/clicker.png",
+    clickerImageSize: { width: 30, height: 30 },
+    blankPixel: "/images/hotspots/extras/blank.gif",
     zoomerContentClass: "zoomer-content"    // Use this to define the class that the HTMLZoomer editor uses to grab ID's
 };

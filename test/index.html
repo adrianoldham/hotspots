@@ -98,12 +98,16 @@
     <script type="text/javascript" charset="utf-8">
 		// needs to be above the setup of hotSpotsPanorama and also a GLOBAL variable
 		// once you grab the output, you can replace the bottom line with it
-		var hotSpotsData = { '0': [ { x: 429, y: 325, href: '#test1' },
+		var hotSpotsData = { 
+		'0': [ 
+		{ x: 429, y: 325, href: '#test1' },
 		{ x: 747, y: 380, href: '#test1' },
 		{ x: 522, y: 558, href: '#test2' } ], 
-		'1': [ { x: 619, y: 395, href: '' },
+		'1': [ 
+		{ x: 619, y: 395, href: '' },
 		{ x: 381, y: 290, href: '' },
-		{ x: 297, y: 393, href: '' } ] };
+		{ x: 297, y: 393, href: '' } ]
+		};
 		
         function runTest() {			
 			// images to use in the panorama (you don't need to do this, depends on how
@@ -133,16 +137,16 @@
 			// fixedPanorama.panorama or flowingPanorama.panorama.
 			var hotSpotsPanorama = new HotSpotsPanorama(panorama, {
 				editorType: HotSpots.Editors.HTMLZoomer,
-				clickerClass: "clicker",
-				clickerImage: "images/clicker.png",
+				//clickerClass: "hotspot",
+				clickerImage: "../images/hotspots/clicker.png",
 				clickerImageSize: { width: 30, height: 30 },
-				blankPixel: "../images/imgzoomer/extras/blank.gif" // need this for iePNGFix
+				blankPixel: "../images/hotspots/extras/blank.gif" // need this for iePNGFix
 			});
 			
 			// need to setup the zoomer to use the same class as the clickers
 			// created, this needs to be AFTER the hot spots panorama is setup
 			// since it relies on it's clickers
-            var imgZoomer = new ImgZoomer("a.clicker", {
+            var imgZoomer = new ImgZoomer("a.hotspot", {
                 imagePath: "../images/imgzoomer/",
 				zoomRects: true
             });
