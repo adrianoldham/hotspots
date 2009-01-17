@@ -62,7 +62,8 @@ var HotSpotsPanorama = Class.create({
             
             // only show hotspots from first panorama
             if (image != this.panorama.images.first()) hotSpots.quickHide();
-            
+            if (image == this.panorama.images.first() && !image.complete) hotSpots.quickHide();
+                        
             hotSpots.editor.observe("mouseover", function() { this.ignoreOutputButton = true; }.bind(this));
             hotSpots.editor.observe("mouseout", function() { this.ignoreOutputButton = false; }.bind(this));
         }.bind(this));
@@ -201,7 +202,7 @@ var HotSpotsPanorama = Class.create({
     show: function() {
         var hotSpots = this.getCurrentHotSpots();
         if (!hotSpots) return;
-        hotSpots.show();
+        hotSpots.show(true);
     },
     
     hide: function() {
