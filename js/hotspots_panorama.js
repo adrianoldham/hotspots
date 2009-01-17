@@ -4,6 +4,8 @@ var HotSpotsPanorama = Class.create({
     initialize: function(panorama, options) {
         this.options = Object.extend(Object.extend({}, HotSpotsPanorama.DefaultOptions), options || {});
         
+        if (panorama.container == null) return;
+        
         // make sure the speed of the hot spots fading is the same as the panorama
         this.options.transitionSpeed = panorama.options.transitionSpeed;
         
