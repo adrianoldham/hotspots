@@ -237,8 +237,6 @@ HotSpots.Spot = Class.create({
         this.hotSpots = hotSpots;
 
         this.setup(x, y, href);
-        
-        this.isIE = (/MSIE (5\.5|6\.|7\.)/.test(navigator.userAgent) && navigator.platform == "Win32");
     },
     
     setup: function(x, y, href) {    
@@ -358,7 +356,7 @@ HotSpots.Spot = Class.create({
     },
     
     show: function() {
-        if (this.isIE) {
+        if (hasNoAlphaAnimationSupport) {
             this.clicker.show();
         } else {
             if (this.effect) this.effect.cancel();
@@ -371,7 +369,7 @@ HotSpots.Spot = Class.create({
     },
     
     hide: function() {
-        if (this.isIE) {
+        if (hasNoAlphaAnimationSupport) {
             this.clicker.hide();
         } else {
             if (this.effect) this.effect.cancel();
