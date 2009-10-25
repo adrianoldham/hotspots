@@ -252,7 +252,7 @@ HotSpots.Spot = Class.create({
         
         this.clickerImage.iePNGFix(this.options.blankPixel);
         
-        this.clicker = new Element("a", { href: href, title: title, 'class': this.options.clickerClass });
+        this.clicker = new Element("a", { href: this.href, title: this.title, 'class': this.options.clickerClass });
         this.clicker.appendChild(this.clickerImage);
         
         // center the position of the clicker based on it's size
