@@ -33,7 +33,7 @@ var HotSpots = Class.create({
 
         // add the hot spots into the container
         this.spotData.each(function(spot) { 
-            this.add(spot.x, spot.y, spot.href);
+            this.add(spot.x, spot.y, spot.href, spot.title);
         }.bind(this));
 
         this.container.setStyle({ position: "relative" });
@@ -49,7 +49,7 @@ var HotSpots = Class.create({
 
     // normal text box editor
     setupNormalEditor: function() {
-        this.hrefInput = new Element("input", { 'type': 'input', 'class': this.options.editorInputClass });              
+        this.hrefInput = new Element("input", { 'type': 'input', 'title': 'HREF', 'class': this.options.editorInputClass });              
     },
 
     // drop down editor that displays the ID's of usable zoomer content
@@ -75,6 +75,7 @@ var HotSpots = Class.create({
         // setup the editor based on the editor type chosen
         this["setup" + this.options.editorType + "Editor"]();
 
+        this.titleInput = new Element("input", { 'type': 'input', 'title': 'Title', 'class': this.options.editorInputClass });              
         this.saveButton = new Element("input", { 'type': 'button', 'value': 'Save', 'class': this.options.editorButtonClass });
         this.cancelButton = new Element("input", { 'type': 'button', 'value': 'Cancel', 'class': this.options.editorButtonClass });
         this.deleteButton = new Element("input", { 'type': 'button', 'value': 'Delete', 'class': this.options.editorButtonClass });
@@ -86,6 +87,7 @@ var HotSpots = Class.create({
             display: 'none'
         });
 
+        this.editor.appendChild(this.titleInput);
         this.editor.appendChild(this.hrefInput);
         this.editor.appendChild(this.saveButton);
         this.editor.appendChild(this.cancelButton);
@@ -96,6 +98,7 @@ var HotSpots = Class.create({
         // save the new href value and hide the editor
         this.saveButton.observe('click', function() { 
             this.activeSpot.href = this.hrefInput.value;
+            this.activeSpot.title = this.titleInput.value;
             this.hideEditor();
         }.bind(this));       
 
@@ -148,10 +151,11 @@ var HotSpots = Class.create({
 
         this.hrefInput.focus();
         this.hrefInput.value = spot.href;
+        this.titleInput.value = spot.title;
     },
 
-    add: function(x, y, href) {
-        this.spots.push(new HotSpots.Spot(x, y, href, this, this.options));
+    add: function(x, y, href, title) {
+        this.spots.push(new HotSpots.Spot(x, y, href, title, this, this.options));
     },
 
     clickAdd: function(event) {
@@ -232,22 +236,23 @@ var HotSpots = Class.create({
 });
 
 HotSpots.Spot = Class.create({
-    initialize: function(x, y, href, hotSpots, options) {
+    initialize: function(x, y, href, title, hotSpots, options) {
         this.options = Object.extend(Object.extend({}, HotSpots.DefaultOptions), options || {});
         this.hotSpots = hotSpots;
 
-        this.setup(x, y, href);
+        this.setup(x, y, href, title);
     },
     
-    setup: function(x, y, href) {    
+    setup: function(x, y, href, title) {    
         this.href = href;
+        this.title = title || "";
         
         this.clickerImage = $(new Image());
         this.clickerImage.src = this.options.clickerImage;
         
         this.clickerImage.iePNGFix(this.options.blankPixel);
         
-        this.clicker = new Element("a", { href: href, 'class': this.options.clickerClass });
+        this.clicker = new Element("a", { href: href, title: title, 'class': this.options.clickerClass });
         this.clicker.appendChild(this.clickerImage);
         
         // center the position of the clicker based on it's size
@@ -265,6 +270,12 @@ HotSpots.Spot = Class.create({
         
         // stop the anchor from working
         this.setupClick();
+        
+        if (this.href == "" || this.href == null) {
+            this.clicker.observe('click', function(event) {
+                event.stop();
+            });
+        }
         
         this.clicker.observe("mousedown", this.mouseDown.bindAsEventListener(this));
         this.clicker.observe("mouseup", this.mouseUp.bindAsEventListener(this));
@@ -345,7 +356,8 @@ HotSpots.Spot = Class.create({
         return "{ " +
                    "x: " + this.x + ", " +
                    "y: " + this.y + ", " +
-                   "href: '" + this.href + "' " +
+                   "href: '" + this.href + "', " +
+                   "title: '" + this.title + "' " +
                "}";
     },
     
