@@ -9,7 +9,7 @@ var HotSpots = Class.create({
         if (this.spotData == null) this.spotData = [];
 
         this.preloadImage();
-  
+
         // set mode to normal
         this.mode = HotSpots.Modes.Normal;
     },
@@ -32,7 +32,7 @@ var HotSpots = Class.create({
         this.spots = $A([]);
 
         // add the hot spots into the container
-        this.spotData.each(function(spot) { 
+        this.spotData.each(function(spot) {
             this.add(spot.x, spot.y, spot.href, spot.title);
         }.bind(this));
 
@@ -49,7 +49,7 @@ var HotSpots = Class.create({
 
     // normal text box editor
     setupNormalEditor: function() {
-        this.hrefInput = new Element("input", { 'type': 'input', 'title': 'HREF', 'class': this.options.editorInputClass });              
+        this.hrefInput = new Element("input", { 'type': 'input', 'title': 'HREF', 'class': this.options.editorInputClass });
     },
 
     // drop down editor that displays the ID's of usable zoomer content
@@ -61,7 +61,7 @@ var HotSpots = Class.create({
         this.hrefInput = new Element("select", { 'class': this.options.editorInputClass });
 
         // option for those with no href set
-        this.hrefInput.appendChild(new Element("option", { 'value': "" }).update("Please select..."));       
+        this.hrefInput.appendChild(new Element("option", { 'value': "" }).update("Please select..."));
 
         contentElements.each(function(element) {
             var option = new Element("option", { 'value': "#" + element.id }).update(element.id);
@@ -75,7 +75,7 @@ var HotSpots = Class.create({
         // setup the editor based on the editor type chosen
         this["setup" + this.options.editorType + "Editor"]();
 
-        this.titleInput = new Element("input", { 'type': 'input', 'title': 'Title', 'class': this.options.editorInputClass });              
+        this.titleInput = new Element("input", { 'type': 'input', 'title': 'Title', 'class': this.options.editorInputClass });
         this.saveButton = new Element("input", { 'type': 'button', 'value': 'Save', 'class': this.options.editorButtonClass });
         this.cancelButton = new Element("input", { 'type': 'button', 'value': 'Cancel', 'class': this.options.editorButtonClass });
         this.deleteButton = new Element("input", { 'type': 'button', 'value': 'Delete', 'class': this.options.editorButtonClass });
@@ -96,11 +96,11 @@ var HotSpots = Class.create({
         this.container.appendChild(this.editor);
 
         // save the new href value and hide the editor
-        this.saveButton.observe('click', function() { 
+        this.saveButton.observe('click', function() {
             this.activeSpot.href = this.hrefInput.value;
             this.activeSpot.title = this.titleInput.value;
             this.hideEditor();
-        }.bind(this));       
+        }.bind(this));
 
         // closes the editor without saving
         this.cancelButton.observe('click', function() { this.hideEditor(); }.bind(this));
@@ -141,7 +141,7 @@ var HotSpots = Class.create({
         if (x + this.editor.getWidth() > this.container.getWidth()) {
             x -= this.editor.getWidth() + this.clickerSize.x;
         }
-        
+
         if (y + this.editor.getHeight() > this.container.getHeight()) {
             y = this.container.getHeight() - this.editor.getHeight() - 5;
         }
@@ -164,7 +164,7 @@ var HotSpots = Class.create({
             event.target == this.editor ||
             event.target.tagName.toLowerCase() == "textarea" ||
             event.target.tagName.toLowerCase() == "input") return;
-        
+
         if (this.hidden) return;
 
         // if editing then don't add anything, but close the editor
@@ -194,7 +194,7 @@ var HotSpots = Class.create({
 
     show: function() {
         this.spots.each(function(spot) {
-          spot.show(); 
+          spot.show();
         });
 
         this.hidden = false;
@@ -202,7 +202,7 @@ var HotSpots = Class.create({
 
     hide: function() {
         this.spots.each(function(spot) {
-          spot.hide(); 
+          spot.hide();
         });
 
         this.hidden = true;
@@ -211,7 +211,7 @@ var HotSpots = Class.create({
 
     quickHide: function() {
         this.spots.each(function(spot) {
-          spot.quickHide(); 
+          spot.quickHide();
         });
 
         this.hidden = true;
@@ -227,7 +227,7 @@ var HotSpots = Class.create({
             }
         }.bind(this));
     },
-    
+
     // This call lets hotspots know that image zoomer is used and needs to handle
     // the disabling of image zoomer in admin mode
     useImgZoomer: function(imgZoomer) {
@@ -242,116 +242,116 @@ HotSpots.Spot = Class.create({
 
         this.setup(x, y, href, title);
     },
-    
-    setup: function(x, y, href, title) {    
+
+    setup: function(x, y, href, title) {
         this.href = href;
         this.title = title || "";
-        
+
         this.clickerImage = $(new Image());
         this.clickerImage.src = this.options.clickerImage;
-        
+
         this.clickerImage.iePNGFix(this.options.blankPixel);
-        
+
         this.clicker = new Element("a", { href: this.href, title: this.title, 'class': this.options.clickerClass });
         this.clicker.appendChild(this.clickerImage);
-        
+
         // center the position of the clicker based on it's size
         this.setPosition(x, y);
-        
+
         // position it correctly
         this.clicker.setStyle({
             zIndex: this.options.clickerZIndex,
             position: "absolute",
             display: "block"
         });
-        
+
         // add it to the specified containers
         this.hotSpots.container.appendChild(this.clicker);
-        
+
         // stop the anchor from working
         this.setupClick();
-        
+
         if (this.href == "" || this.href == null) {
             this.clicker.observe('click', function(event) {
                 event.stop();
             });
         }
-        
+
         this.clicker.observe("mousedown", this.mouseDown.bindAsEventListener(this));
         this.clicker.observe("mouseup", this.mouseUp.bindAsEventListener(this));
         this.hotSpots.container.observe("mousemove", this.mouseMove.bindAsEventListener(this));
     },
-    
+
     setPosition: function(x, y) {
         this.x = x;
         this.y = y;
-        
+
         // center the position of the clicker based on it's size
         x -= this.hotSpots.clickerSize.x / 2;
         y -= this.hotSpots.clickerSize.y / 2;
-        
+
         // position it correctly
         this.clicker.setStyle({ left: x + "px", top: y + "px" });
     },
-    
+
     setupClick: function() {
         // stop the anchor from working
         this.clicker.observe("click", this.click.bindAsEventListener(this));
     },
-    
+
     click: function(event) {
         // only click add if in admin mode
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
-        
+
         // if the clicker was never dragged, then open the editor to edit
         if (!this.dragged && !this.hidden) {
             this.hotSpots.openEditor(this);
         }
-        
+
         event.stop();
         return false;
     },
-    
-    mouseDown: function(event) {        
+
+    mouseDown: function(event) {
         this.dragged = false;
 
         // only click add if in admin mode
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
         if (this.hidden) return;
-                
+
         var offset = this.hotSpots.container.cumulativeOffset();
         var position = [ event.pageX - offset[0], event.pageY - offset[1] ];
-        
+
         this.initialOffset = [ position[0] - this.x, position[1] - this.y ];
-        
+
         this.canDrag = true;
         event.stop();
     },
-    
+
     mouseMove: function(event) {
         // only click add if in admin mode
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
         if (this.hidden) return;
-        
+
         if (this.canDrag) {
             this.dragged = true;
-        
+
             var offset = this.hotSpots.container.cumulativeOffset();
             var position = [ event.pageX - offset[0], event.pageY - offset[1] ];
-            
+
             this.setPosition(position[0] - this.initialOffset[0], position[1] - this.initialOffset[1]);
         }
     },
-    
+
     mouseUp: function(event) {
         // only click add if in admin mode
         if (this.hotSpots.mode != HotSpots.Modes.Admin) return;
         if (this.hidden) return;
-        
+
         this.canDrag = false;
         event.stop();
     },
-    
+
     asJSON: function() {
         return "{ " +
                    "x: " + this.x + ", " +
@@ -360,13 +360,13 @@ HotSpots.Spot = Class.create({
                    "title: '" + this.title + "' " +
                "}";
     },
-    
+
     remove: function() {
         // deletes the clicker defined
         this.clicker.remove();
         this.hotSpots.spots = this.hotSpots.spots.without(this);
     },
-    
+
     show: function() {
         if (hasNoAlphaAnimationSupport) {
             this.clicker.show();
@@ -374,12 +374,12 @@ HotSpots.Spot = Class.create({
             if (this.effect) this.effect.cancel();
             this.effect = new Effect.Appear(this.clicker, {
                 duration: this.options.transitionSpeed
-            });            
+            });
         }
-        
+
         this.hidden = false;
     },
-    
+
     hide: function() {
         if (hasNoAlphaAnimationSupport) {
             this.clicker.hide();
@@ -389,10 +389,10 @@ HotSpots.Spot = Class.create({
                 duration: this.options.transitionSpeed
             });
         }
-        
+
         this.hidden = true;
     },
-    
+
     quickHide: function() {
         this.clicker.hide();
         this.hidden = true;
