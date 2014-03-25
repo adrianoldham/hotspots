@@ -5,17 +5,17 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-	<title>index</title>
+	<title>hotspots</title>
 	
     <script type="text/javascript" charset="utf-8" src="../lib/prototype.js"></script>
     <script type="text/javascript" charset="utf-8" src="../lib/scriptaculous.js?load=effects"></script>
     <script type="text/javascript" charset="utf-8" src="../js/hotspots.js"></script>
     <script type="text/javascript" charset="utf-8" src="../js/hotspots_panorama.js"></script>
-    <script type="text/javascript" charset="utf-8" src="../lib/imgzoomer.js"></script>
-    <script type="text/javascript" charset="utf-8" src="../lib/shadowme.js"></script>
-    <script type="text/javascript" charset="utf-8" src="../lib/plugins/htmlzoomer.js"></script>
-    <script type="text/javascript" charset="utf-8" src="../lib/panorama.js"></script>
-    <script type="text/javascript" charset="utf-8" src="../lib/helper.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../imgzoomer/js/imgzoomer.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../imgzoomer/js/shadowme.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../imgzoomer/js/plugins/htmlzoomer.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../flow/js/panorama.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../flow/js/helper.js"></script>
 
 	<style type="text/css" media="screen">
 		#container {
@@ -147,8 +147,9 @@
 			// created, this needs to be AFTER the hot spots panorama is setup
 			// since it relies on it's clickers
             var imgZoomer = new ImgZoomer("a.hotspot", {
-                imagePath: "images/imgzoomer/",
-				zoomRects: true
+				imagePath: "../../imgzoomer/images/imgzoomer/",
+				zoomRects: true,
+				centerOf: "container"
             });
 
 			// This is required to link to image zoomer, again needs to be AFTER the img zoomer setup
